@@ -1,6 +1,9 @@
 import React from "react";
 import "./Styles.css";
 import { useNavigate } from "react-router-dom";
+import exportFromJSON from "export-from-json";
+
+import BaseURL from "../../Api/BaseURL";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -11,6 +14,75 @@ const Index = () => {
       navigate("/login");
     }
   }, []);
+
+  const TransactionData = () => {
+    fetch(`${BaseURL}admin/gettransaction`, {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    })
+      .then((res) => res.json())
+      .then((dta) => {
+        console.log(dta);
+        if (!dta.error) {
+          const data = dta.transactions.map((ele) => {
+            return {
+              id: ele._id,
+              userId: ele.userId._id,
+              userName: ele.userId.name,
+              userEmail: ele.userId.email,
+              Amount: ele.amount,
+              transactionId: ele.transactionId,
+              transactionType: ele.transactionType,
+              transactionDate: ele.date,
+            };
+          });
+
+          const fileName = "TransactionReport";
+          const exportType = exportFromJSON.types.csv;
+          exportFromJSON({ data, fileName, exportType });
+        } else alert("Error");
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const UserData = () => {
+    fetch(`${BaseURL}admin/allusers`, {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    })
+      .then((res) => res.json())
+      .then((dta) => {
+        console.log(dta);
+        const data = dta.users.map((ele) => {
+          return {
+            id: ele._id,
+            name: ele.name,
+            email: ele.email,
+            phone: ele.mobile,
+            joiningDate: ele.joiningDate,
+            gender: ele.gender,
+            dob: ele.dob,
+            verified: ele.isVerified,
+            balance: ele.balance,
+            savingprofit: ele.savingprofit,
+            totalDeposit: ele.totalDeposit,
+            totalWithdraw: ele.totalWithdraw,
+            totalProfit: ele.totalProfit,
+          };
+        });
+
+        if (!dta.error) {
+          const fileName = "UserReport";
+          const exportType = exportFromJSON.types.csv;
+          exportFromJSON({ data, fileName, exportType });
+        } else alert("Error");
+      })
+      .catch((err) => console.log(err));
+  };
 
   return (
     <div className="repage mt-5 pad90">
@@ -63,7 +135,9 @@ const Index = () => {
               </label>
             </div>
           </div>
-          <div className="btn btn-dark btn-sm mt-4">Export</div>
+          <div onClick={TransactionData} className="btn btn-dark btn-sm mt-4">
+            Export
+          </div>
         </div>
       </div>
       <div className="usersec mt-5">
@@ -115,7 +189,9 @@ const Index = () => {
               </label>
             </div>
           </div>
-          <div className="btn btn-dark btn-sm mt-4">Export</div>
+          <div onClick={UserData} className="btn btn-dark btn-sm mt-4">
+            Export
+          </div>
         </div>
       </div>
     </div>
