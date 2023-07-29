@@ -1,11 +1,13 @@
 import React from "react";
 import "./Styles.css";
 
-import { NavLink, Link, Outlet } from "react-router-dom";
+import { NavLink, Link, Outlet, useNavigate } from "react-router-dom";
 
 import Avapic from "../../assest/img/ava.jpg";
 
 const Index = (props) => {
+  const navigate = useNavigate();
+
   const [islogin, setIsLogin] = React.useState(false);
   const [name, setName] = React.useState("");
 
@@ -16,6 +18,14 @@ const Index = (props) => {
       setName(user?.name);
     } else setIsLogin(false);
   }, [props.login]);
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    setName("");
+    setIsLogin(false);
+    navigate("/login");
+  };
 
   return (
     <>
@@ -53,11 +63,11 @@ const Index = (props) => {
                   </span>
                   <ul className="dropdown-menu">
                     <li>
-                      <a className="dropdown-item" href="#">
-                        Action
-                      </a>
+                      <div onClick={logout} className="dropdown-item">
+                        Logout
+                      </div>
                     </li>
-                    <li>
+                    {/* <li>
                       <a className="dropdown-item" href="#">
                         Another action
                       </a>
@@ -66,7 +76,7 @@ const Index = (props) => {
                       <a className="dropdown-item" href="#">
                         Something else here
                       </a>
-                    </li>
+                    </li> */}
                   </ul>
                 </li>
               </ul>
