@@ -10,12 +10,14 @@ const Index = (props) => {
 
   const [islogin, setIsLogin] = React.useState(false);
   const [name, setName] = React.useState("");
+  const [balance, setBalance] = React.useState(0);
 
   React.useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (props.login) {
       setIsLogin(true);
       setName(user?.name);
+      setBalance(user?.balance);
     } else setIsLogin(false);
   }, [props.login]);
 
@@ -43,7 +45,7 @@ const Index = (props) => {
               <ul className="navbar-nav d-flex justify-content-between flex-row w-100">
                 <li className="nav-item">
                   <Link className="nav-link mx-3 bal" to="yourbalance">
-                    <i className="fa-solid fa-wallet"></i> $245,254.00
+                    <i className="fa-solid fa-wallet"></i> ${balance}
                   </Link>
                 </li>
                 <li className="nav-item">
@@ -91,9 +93,6 @@ const Index = (props) => {
                 type="button"
                 data-bs-toggle="collapse"
                 data-bs-target="#navbarNav"
-                aria-controls="navbarNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
               >
                 <span className="navbar-toggler-icon"></span>
               </button>

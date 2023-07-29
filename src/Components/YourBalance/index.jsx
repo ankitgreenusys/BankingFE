@@ -14,34 +14,36 @@ const Index = () => {
     }
   }, []);
 
-  const [translist, setTranslist] = React.useState([]);
+  const [transdta, setTransdta] = React.useState({});
 
   React.useEffect(() => {
-    fetch(BaseURL + "admin/adminTransactionHistory?userId=" + user.id, {
+    fetch(BaseURL + "admin/mydetails", {
       method: "GET",
       headers: {
-        Authorization: localStorage.getItem("token"),
+        Authorization: "Bearer " + localStorage.getItem("token"),
       },
     })
       .then((res) => res.json())
       .then((res) => {
         console.log(res);
-        if (res.responseCode === 200) setTranslist(res.responsResult);
-        else alert(res.resposneMessage);
+        if (!res.error) setTransdta(res.transactions);
+        else alert(res.error);
       })
       .catch((err) => console.log(err));
   }, []);
 
-  const data = [1, 2, 3, 4, 5, 6, 7, 8];
   const rendercommntable = () =>
-    translist.map((dta, idx) => (
+    transdta?.transactions.map((dta, idx) => (
       <tr>
-        <td>{idx}.</td>
-        <td>Cheyenne Vaccaro</td>
-        <td>22 Jan 23, 21:24</td>
-        <td>1246792349413645476</td>
-        <td>Withdraw</td>
-        <td className={idx % 2 ? "text-red" : "text-green"}>$200</td>
+        <td>{idx + 1}.</td>
+        <td>{dta?.userId?.name}</td>
+        <td colSpan={2}>
+          {/* 22 Jan 23, 21:24 */}
+          {new Date(dta?.date).toLocaleString()}
+        </td>
+        <td colSpan={2}>{dta?.transactionId}</td>
+        <td>{dta?.transactionType}</td>
+        <td className="">${dta?.amount}</td>
       </tr>
     ));
 
@@ -50,7 +52,7 @@ const Index = () => {
       <div className="ybalhead">
         <h6 className="text-red">Your Balance</h6>
         <div className="d-flex align-items-center mt-1">
-          <h4>$245,254.00</h4>
+          <h4>${transdta?.balance}</h4>
           <div className="btn btn-sm btn-red ms-4">Withdrawal</div>
         </div>
       </div>
@@ -66,8 +68,12 @@ const Index = () => {
                 <thead>
                   <tr>
                     <th>S. No.</th>
+                    <th>Name</th>
                     <th>Date & Time</th>
+                    <th> </th>
                     <th>Transaction ID</th>
+                    <th> </th>
+
                     <th>Type</th>
                     <th>Amount</th>
                   </tr>
@@ -77,7 +83,7 @@ const Index = () => {
             <div className="tbl-content">
               <table cellPadding="0" cellSpacing="0" border="0">
                 <tbody>
-                  {translist.length > 0 ? (
+                  {transdta?.transactions?.length > 0 ? (
                     rendercommntable()
                   ) : (
                     <tr>
