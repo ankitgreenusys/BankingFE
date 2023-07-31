@@ -42,9 +42,9 @@ const Index = () => {
             <td colSpan={2}>{dt._id}</td>
             <td>{dt.name}</td>
             <td>
-              {dt.joiningDate.split("T")[0].split("-").reverse().join("-")}
+              {dt?.joiningDate.split("T")[0].split("-").reverse().join("-")}
             </td>
-            <td>{dt.dob.split("T")[0].split("-").reverse().join("-")}</td>
+            <td>{dt?.dob.split("T")[0].split("-").reverse().join("-")}</td>
             <td>
               <Link to={"/user/" + dt._id} className="btn btn-sm btn-blue">
                 View Details
