@@ -18,21 +18,22 @@ const ActiveUsers = () => {
   });
 
   React.useEffect(() => {
-    fetch(`${BaseURL}admin/userbasedgender`, {
-      method: "GET",
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    })
-      .then((res) => res.json())
-      .then((dta) => {
-        console.log(dta);
-        if (!dta.error) {
-          setData(dta.result);
-          setLoading(false);
-        } else alert("Error");
+    if (localStorage.getItem("token"))
+      fetch(`${BaseURL}admin/userbasedgender`, {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
       })
-      .catch((err) => console.log(err));
+        .then((res) => res.json())
+        .then((dta) => {
+          console.log(dta);
+          if (!dta.error) {
+            setData(dta.result);
+            setLoading(false);
+          } else alert("Error");
+        })
+        .catch((err) => console.log(err));
   }, []);
 
   React.useEffect(() => {

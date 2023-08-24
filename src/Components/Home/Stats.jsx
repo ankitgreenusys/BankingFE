@@ -9,23 +9,24 @@ const Stats = () => {
   const [yeildInvestment, setYeildInvestment] = React.useState(0);
 
   React.useEffect(() => {
-    fetch(BaseURL + "admin/statsdashboard", {
-      method: "GET",
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (!res.error) {
-          setTotalMember(res.totalmember);
-          setTotalLoan(res.totalloan);
-          setTotalInterest(res.totalinterest.toFixed(2));
-          setYeildInvestment(res.totalyield);
-        }
-        // else alert(res.resposneMessage);
+    if (localStorage.getItem("token"))
+      fetch(BaseURL + "admin/statsdashboard", {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
       })
-      .catch((err) => console.log(err));
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.error) {
+            setTotalMember(res.totalmember);
+            setTotalLoan(res.totalloan);
+            setTotalInterest(res.totalinterest.toFixed(2));
+            setYeildInvestment(res.totalyield);
+          }
+          // else alert(res.resposneMessage);
+        })
+        .catch((err) => console.log(err));
   }, []);
 
   return (

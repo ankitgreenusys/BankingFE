@@ -6,21 +6,22 @@ const Notification = () => {
   const [noti, setNoti] = React.useState([]);
 
   React.useEffect(() => {
-    fetch(BaseURL + "admin/notification", {
-      method: "GET",
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        // console.log(res);
-        if (!res.error) {
-          setNoti(res.notifications);
-        }
-        // else alert(res.resposneMessage);
+    if (localStorage.getItem("token"))
+      fetch(BaseURL + "admin/notification", {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
       })
-      .catch((err) => console.log(err));
+        .then((res) => res.json())
+        .then((res) => {
+          // console.log(res);
+          if (!res.error) {
+            setNoti(res.notifications);
+          }
+          // else alert(res.resposneMessage);
+        })
+        .catch((err) => console.log(err));
   }, []);
 
   const renderNoti = () =>
