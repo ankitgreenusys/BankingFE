@@ -36,6 +36,7 @@ const Index = () => {
               transactionId: ele.transactionId,
               transactionType: ele.transactionType,
               transactionDate: ele.date,
+              Remark: ele.remark,
             };
           });
 

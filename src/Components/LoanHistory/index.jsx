@@ -36,6 +36,33 @@ const Index = () => {
       .catch((err) => console.log(err));
   }, []);
 
+  const rendergivenloanhistable = () => {
+    return arrLoan?.giventransactionId ? (
+      <tr>
+        <td>1.</td>
+        <td>
+          {arrLoan?.giventransactionId?.date
+            .split("T")[0]
+            .split("-")
+            .reverse()
+            .join("-")}
+          {", "}
+          {arrLoan?.giventransactionId?.date.split("T")[1].split(".")[0]}
+        </td>
+        <td>{arrLoan?.giventransactionId?.transactionId}</td>
+        <td>$ {arrLoan?.giventransactionId?.amount}</td>
+        <td>{arrLoan?.modeOfPayment}</td>
+        <td className="">{arrLoan?.giventransactionId?.remark}</td>
+      </tr>
+    ) : (
+      <tr>
+        <td colSpan="6" className="text-center">
+          {arrLoan?.status}
+        </td>
+      </tr>
+    );
+  };
+
   const renderloanhistable = () => {
     return arrLoan?.repaymenttransactionId?.length != 0 ? (
       arrLoan?.repaymenttransactionId?.map((dta, idx) => (
@@ -52,16 +79,12 @@ const Index = () => {
               : "-"}
           </td>
           <td>$ {dta.amount}</td>
-          <td>{dta.modeOfPayment}</td>
-          <td className="">{dta.status}</td>
+          <td>{dta.modeofpayment}</td>
+          <td className="">{dta.remark}</td>
         </tr>
       ))
     ) : (
-      <tr>
-        <td colSpan="6" className="text-center">
-          {arrLoan?.status}
-        </td>
-      </tr>
+      <tr></tr>
     );
   };
 
@@ -70,7 +93,8 @@ const Index = () => {
       <div className="d-flex align-items-center justify-content-between mb-3">
         <div className="">
           <Link className="nav-link" to="/loanmanagement">
-            <i className="fa-solid fa-arrow-left me-2"></i> {arrLoan?.user?.name}
+            <i className="fa-solid fa-arrow-left me-2"></i>{" "}
+            {arrLoan?.user?.name}
           </Link>
         </div>
         <div className="">
@@ -99,7 +123,10 @@ const Index = () => {
           <div className="tbl-content">
             <table cellPadding="0" cellSpacing="0" border="0">
               <thead></thead>
-              <tbody>{renderloanhistable()}</tbody>
+              <tbody>
+                {rendergivenloanhistable()}
+                {renderloanhistable()}
+              </tbody>
             </table>
           </div>
         </section>
