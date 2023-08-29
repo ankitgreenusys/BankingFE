@@ -98,7 +98,7 @@ const Index = () => {
         <td>{dta.term} Months</td>
         <td>
           <div className="btn btn-sm btn-blue">
-            <Link className="nav-link" to={`history/${dta.user._id}`}>
+            <Link className="nav-link" to={`history/${dta._id}`}>
               View Details
             </Link>
           </div>
@@ -117,7 +117,7 @@ const Index = () => {
         <td>{dta.term} Months</td>
         <td>
           <div className="btn btn-sm btn-blue">
-            <Link className="nav-link" to={`history/${dta.user._id}`}>
+            <Link className="nav-link" to={`history/${dta._id}`}>
               View Loan Details
             </Link>
           </div>

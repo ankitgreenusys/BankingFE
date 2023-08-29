@@ -9,6 +9,8 @@ const Index = () => {
   const { id } = useParams();
 
   const [arrLoan, setArrLoan] = React.useState([]);
+  const [totpaid, setTotpaid] = React.useState(0);
+  const [totremain, setTotremain] = React.useState(0);
 
   React.useEffect(() => {
     const user = localStorage.getItem("user");
@@ -16,7 +18,7 @@ const Index = () => {
       navigate("/login");
     }
 
-    fetch(`${BaseURL}admin/loanbyuser/${id}`, {
+    fetch(`${BaseURL}admin/loan/${id}`, {
       method: "GET",
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token"),
@@ -25,23 +27,24 @@ const Index = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        if (!data.error) setArrLoan(data.loans);
-        else alert("Error");
+        if (!data.error) {
+          setArrLoan(data.loan);
+          setTotpaid(data.totalpaid);
+          setTotremain(data.remaining);
+        } else alert("Error");
       })
       .catch((err) => console.log(err));
   }, []);
 
-  const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-
   const renderloanhistable = () => {
-    return arrLoan?.loan ? (
-      arrLoan.loan.map((dta, idx) => (
+    return arrLoan?.repaymenttransactionId?.length != 0 ? (
+      arrLoan?.repaymenttransactionId?.map((dta, idx) => (
         <tr key={idx}>
           <td>{idx}.</td>
           <td>
-            {dta.createdAt.split("T")[0].split("-").reverse().join("-")}
+            {dta.date.split("T")[0].split("-").reverse().join("-")}
             {", "}
-            {dta.createdAt.split("T")[1].split(".")[0]}
+            {dta.date.split("T")[1].split(".")[0]}
           </td>
           <td>
             {dta.giventransactionId
@@ -56,7 +59,7 @@ const Index = () => {
     ) : (
       <tr>
         <td colSpan="6" className="text-center">
-          No Data Found
+          {arrLoan?.status}
         </td>
       </tr>
     );
@@ -67,12 +70,14 @@ const Index = () => {
       <div className="d-flex align-items-center justify-content-between mb-3">
         <div className="">
           <Link className="nav-link" to="/loanmanagement">
-            <i className="fa-solid fa-arrow-left me-2"></i> {arrLoan?.name}
+            <i className="fa-solid fa-arrow-left me-2"></i> {arrLoan?.user?.name}
           </Link>
         </div>
         <div className="">
-          <div className="btn btn-sm btn-green">Total Paid $ 2000</div>
-          <div className="btn btn-sm btn-red ms-2">Remaining Amount $ 2000</div>
+          <div className="btn btn-sm btn-green">Total Paid $ {totpaid}</div>
+          <div className="btn btn-sm btn-red ms-2">
+            Remaining Amount $ {totremain}
+          </div>
         </div>
       </div>
       <div className="commntable">
