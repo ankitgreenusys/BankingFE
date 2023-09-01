@@ -9,6 +9,7 @@ const Index = () => {
   const { id } = useParams();
 
   const [investment, setInvestment] = React.useState([]);
+  const [totalinvestment, setTotalInvestment] = React.useState(0);
 
   React.useEffect(() => {
     const user = localStorage.getItem("user");
@@ -26,8 +27,10 @@ const Index = () => {
       .then((res) => res.json())
       .then((res) => {
         console.log(res);
-        if (!res.error) setInvestment(res.investments);
-        else alert(res.resposneMessage);
+        if (!res.error) {
+          setInvestment(res.investments);
+          setTotalInvestment(res.totalamount);
+        } else alert(res.resposneMessage);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -62,12 +65,13 @@ const Index = () => {
       <div className="d-flex align-items-center justify-content-between mb-3">
         <div className="">
           <Link className="nav-link" to="/investment">
-            <i className="fa-solid fa-arrow-left"></i>{" "}
-            {investment?.name}
+            <i className="fa-solid fa-arrow-left"></i> {investment?.name}
           </Link>
         </div>
         <div className="">
-          <div className="btn btn-sm btn-green">Total Deposit $ 20000</div>
+          <div className="btn btn-sm btn-green">
+            Total Deposit $ {totalinvestment}
+          </div>
         </div>
       </div>
       <div className="commntable">
@@ -89,7 +93,30 @@ const Index = () => {
           <div className="tbl-content">
             <table cellPadding="0" cellSpacing="0" border="0">
               <thead></thead>
-              <tbody>{renderloanhistable()}</tbody>
+              <tbody>
+                <tr>
+                  <td>0.</td>
+                  <td>
+                    {new Date().toLocaleDateString()} ,{" "}
+                    {new Date().toLocaleTimeString()}
+                  </td>
+                  <td>{Math.floor(100000000 + Math.random() * 900000000)}</td>
+                  <td>$ {Math.floor(10000 + Math.random() * 90000)}</td>
+                  <td>
+                    {
+                      ["Cash", "Cheque", "Bank Transfer"][
+                        Math.floor(Math.random() * 4)
+                      ]
+                    }
+                  </td>
+                  <td className="">
+                    <button className="btn btn-primary">
+                      Pay Now <i className="fa-solid fa-arrow-right"></i>
+                    </button>
+                  </td>
+                </tr>
+                {renderloanhistable()}
+              </tbody>
             </table>
           </div>
         </section>

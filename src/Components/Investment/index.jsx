@@ -34,13 +34,25 @@ const Index = () => {
     investment.map((dta, idx) => (
       <tr>
         <td>{idx + 1}.</td>
-        <td>{dta.userId.name}</td>
-        <td colSpan={2}>{dta.userId._id}</td>
-        <td>{dta.savingProfit}</td>
-        <td>{dta.date.split("T")[0].split("-").reverse().join("-")}</td>
+        <td>{dta.name}</td>
+        <td colSpan={2}>{dta._id}</td>
+        <td>
+          {dta.investment.length === 0
+            ? "No Investment"
+            : dta?.investment[dta?.investment.length - 1].savingProfit}
+        </td>
+        <td>
+          {dta.investment.length === 0
+            ? "No Payment"
+            : dta?.investment[dta?.investment.length - 1].date
+                .split("T")[0]
+                .split("-")
+                .reverse()
+                .join("-")}
+        </td>
         <td>
           <div className="btn btn-sm btn-blue">
-            <Link className="nav-link" to={"history/" + dta.userId._id}>
+            <Link className="nav-link" to={"history/" + dta._id}>
               View Details
             </Link>
           </div>

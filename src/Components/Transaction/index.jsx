@@ -3,6 +3,7 @@ import "./Styles.css";
 import { useNavigate } from "react-router-dom";
 
 import BaseURL from "../../Api/BaseURL";
+import { set } from "react-hook-form";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -31,6 +32,9 @@ const Index = () => {
         console.log(res);
         if (!res.error) {
           setTranslist(res.transactions);
+          setTotalprofit(res.totalprofit);
+          setTotaldeposit(res.totaldeposit);
+          setTotalwithdraw(res.totalwithdraw);
         }
       })
       .catch((err) => console.log(err));

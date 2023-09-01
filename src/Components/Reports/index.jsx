@@ -28,14 +28,9 @@ const Index = () => {
         if (!dta.error) {
           const data = dta.transactions.map((ele) => {
             return {
-              id: ele._id,
-              userId: ele.userId._id,
-              userName: ele.userId.name,
-              userEmail: ele.userId.email,
-              Amount: ele.amount,
-              transactionId: ele.transactionId,
-              transactionType: ele.transactionType,
               transactionDate: ele.date,
+              transactionId: ele.transactionId,
+              Amount: ele.amount,
               Remark: ele.remark,
             };
           });
