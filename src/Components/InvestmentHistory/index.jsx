@@ -35,7 +35,9 @@ const Index = () => {
       .catch((err) => console.log(err));
   }, []);
 
-  const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+  const paynow = () => {
+    navigate(`/investment/${id}/payment`);
+  };
 
   const renderloanhistable = () =>
     investment?.investment ? (
@@ -96,21 +98,12 @@ const Index = () => {
               <tbody>
                 <tr>
                   <td>0.</td>
-                  <td>
-                    {new Date().toLocaleDateString()} ,{" "}
-                    {new Date().toLocaleTimeString()}
-                  </td>
-                  <td>{Math.floor(100000000 + Math.random() * 900000000)}</td>
+                  <td>{new Date().toLocaleDateString()}</td>
+                  <td> -- </td>
                   <td>$ {Math.floor(10000 + Math.random() * 90000)}</td>
-                  <td>
-                    {
-                      ["Cash", "Cheque", "Bank Transfer"][
-                        Math.floor(Math.random() * 4)
-                      ]
-                    }
-                  </td>
+                  <td>--</td>
                   <td className="">
-                    <button className="btn btn-primary">
+                    <button onClick={paynow} className="btn btn-primary">
                       Pay Now <i className="fa-solid fa-arrow-right"></i>
                     </button>
                   </td>

@@ -2,6 +2,7 @@ import React from "react";
 import "./Styles.css";
 
 import { useParams, Link, useNavigate } from "react-router-dom";
+import exportFromJSON from "export-from-json";
 
 import BaseURL from "../../Api/BaseURL";
 
@@ -11,6 +12,7 @@ const Index = () => {
 
   const [user, setUser] = React.useState({});
   const [transactions, setTransactions] = React.useState([]);
+  const [totalDeposit, setTotalDeposit] = React.useState(0);
 
   React.useEffect(() => {
     if (id) {
@@ -26,6 +28,7 @@ const Index = () => {
           if (!data.error) {
             setUser(data.myuser);
             setTransactions(data.myuser.transactions);
+            setTotalDeposit(data.totaldeposit);
           } else {
             alert("Error");
             navigate("/users");
@@ -38,6 +41,21 @@ const Index = () => {
         });
     }
   }, [id]);
+
+  const exportTransaction = () => {
+    const data = transactions.map((ele) => {
+      return {
+        transactionDate: ele.date,
+        transactionId: ele.transactionId,
+        Amount: ele.amount,
+        Remark: ele.remark,
+      };
+    });
+
+    const fileName = "TransactionReport";
+    const exportType = exportFromJSON.types.csv;
+    exportFromJSON({ data, fileName, exportType });
+  };
 
   const rendercommntable = () =>
     transactions.map((dt, idx) => (
@@ -77,9 +95,7 @@ const Index = () => {
           <div className="divder"></div>
           <div className="">
             <p>Date of Birth</p>
-            <h6>{
-            user.dob?.split("T")[0].split("-").reverse().join("-")
-            }</h6>
+            <h6>{user.dob?.split("T")[0].split("-").reverse().join("-")}</h6>
           </div>
           <div className="divder"></div>
           <div className="">
@@ -105,15 +121,17 @@ const Index = () => {
         <h6 className="text-red mt-5">Investment Portfolio</h6>
         <div className="d-flex mt-4">
           <div className="btn btn-blue me-5">
-            Total Deposit <br /> ${user?.totalDeposit}
+            Total Deposit <br /> $ {totalDeposit}
           </div>
           <div className="btn btn-red">
-            Total Withdraw <br /> ${user?.totalWithdraw}
+            Total Withdraw <br /> $ {user?.totalWithdraw}
           </div>
         </div>
         <h6 className="mt-5 d-flex justify-content-between">
           <div className="text-red">Transactions</div>
-          <button className="btn btn-dark btn-sm">Export</button>
+          <button onClick={exportTransaction} className="btn btn-dark btn-sm">
+            Export
+          </button>
         </h6>
         <div className="commntable">
           <section>

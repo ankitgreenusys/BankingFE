@@ -13,6 +13,7 @@ import LoanHistory from "./Components/LoanHistory";
 import CreateLoan from "./Components/CreateLoan";
 import Investment from "./Components/Investment";
 import InvestmentHistory from "./Components/InvestmentHistory";
+import Payment from "./Components/InvestmentHistory/Payment";
 import Transaction from "./Components/Transaction";
 import Reports from "./Components/Reports";
 import CustomerSupport from "./Components/CustomerSupport";
@@ -36,6 +37,7 @@ function App() {
             path="/investment/history/:id"
             element={<InvestmentHistory />}
           />
+          <Route path="/investment/:id/payment" element={<Payment />} />
           <Route path="/transaction" element={<Transaction />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/customersupport" element={<CustomerSupport />} />
