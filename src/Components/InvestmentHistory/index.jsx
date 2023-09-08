@@ -1,6 +1,7 @@
 import React from "react";
 import "./Styles.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import exportFromJSON from "export-from-json";
 
 import BaseURL from "../../Api/BaseURL";
 
@@ -39,6 +40,14 @@ const Index = () => {
     navigate(`/investment/${id}/payment`);
   };
 
+  const exportToCSV = () => {
+    const data = investment?.investment;
+    const fileName = "investment";
+    const exportType = "csv";
+
+    exportFromJSON({ data, fileName, exportType });
+  };
+
   const renderloanhistable = () =>
     investment?.investment ? (
       investment.investment.map((dta, idx) => (
@@ -71,6 +80,10 @@ const Index = () => {
           </Link>
         </div>
         <div className="">
+          <div className="btn btn-sm btn-dark me-3" onClick={exportToCSV}>
+            Export
+          </div>
+
           <div className="btn btn-sm btn-green">
             Total Deposit $ {totalinvestment}
           </div>

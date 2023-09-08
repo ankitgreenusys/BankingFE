@@ -1,6 +1,7 @@
 import React from "react";
 import "./Styles.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import exportFromJSON from "export-from-json";
 
 import BaseURL from "../../Api/BaseURL";
 
@@ -35,6 +36,14 @@ const Index = () => {
       })
       .catch((err) => console.log(err));
   }, []);
+
+  const exportToCSV = () => {
+    const data = arrLoan?.repaymenttransactionId;
+    const fileName = "loan";
+    const exportType = "csv";
+
+    exportFromJSON({ data, fileName, exportType });
+  };
 
   const rendergivenloanhistable = () => {
     return arrLoan?.giventransactionId ? (
@@ -98,6 +107,9 @@ const Index = () => {
           </Link>
         </div>
         <div className="">
+          <div className="btn btn-sm btn-dark me-3" onClick={exportToCSV}>
+            Export
+          </div>
           <div className="btn btn-sm btn-green">Total Paid $ {totpaid}</div>
           <div className="btn btn-sm btn-red ms-2">
             Remaining Amount $ {totremain}
