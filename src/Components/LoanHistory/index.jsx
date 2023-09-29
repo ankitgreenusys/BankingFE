@@ -2,6 +2,8 @@ import React from "react";
 import "./Styles.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import exportFromJSON from "export-from-json";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 import BaseURL from "../../Api/BaseURL";
 
@@ -36,6 +38,63 @@ const Index = () => {
       })
       .catch((err) => console.log(err));
   }, []);
+
+  const exportToPDF = () => {
+    const header = [
+      "S. No.",
+      "Date",
+      "Time",
+      "Transaction ID",
+      "Amount",
+      "Method",
+      "Status",
+    ];
+
+    const data = [];
+    const total = arrLoan?.repaymenttransactionId?.length;
+    const totalpaid = arrLoan?.totalpaid;
+    const totalremain = arrLoan?.remaining;
+
+    // data.push(header);
+    data.push([
+      1,
+      arrLoan?.giventransactionId?.date
+        .split("T")[0]
+        .split("-")
+        .reverse()
+        .join("-"),
+      arrLoan?.giventransactionId?.date.split("T")[1].split(".")[0],
+      arrLoan?.giventransactionId?.transactionId,
+      arrLoan?.giventransactionId?.amount,
+      arrLoan?.modeOfPayment,
+      arrLoan?.giventransactionId?.remark,
+    ]);
+
+    arrLoan?.repaymenttransactionId?.map((dta, idx) => {
+      data.push([
+        idx + 2,
+        dta.date.split("T")[0].split("-").reverse().join("-"),
+        dta.date.split("T")[1].split(".")[0],
+        dta.giventransactionId ? dta.giventransactionId.transactionId : "-",
+        dta.amount,
+        dta.modeofpayment,
+        dta.remark,
+      ]);
+    });
+
+    const doc = new jsPDF();
+    doc.text("Loan History", 14, 15);
+
+    doc.text("Total Paid: " + totalpaid, 14, 15 + total * 10);
+    doc.text("Total Remaining: " + totalremain, 14, 15 + total * 10 + 5);
+    doc.autoTable({
+      head: [header],
+      body: data,
+      margin: { top: 40 },
+      styles: { fontSize: 10, valign: "middle", halign: "center" },
+    });
+    doc.save("loan.pdf");
+  };
 
   const exportToCSV = () => {
     const data = arrLoan?.repaymenttransactionId;
@@ -107,7 +166,7 @@ const Index = () => {
           </Link>
         </div>
         <div className="">
-          <div className="btn btn-sm btn-dark me-3" onClick={exportToCSV}>
+          <div className="btn btn-sm btn-dark me-3" onClick={exportToPDF}>
             Export
           </div>
           <div className="btn btn-sm btn-green">Total Paid $ {totpaid}</div>

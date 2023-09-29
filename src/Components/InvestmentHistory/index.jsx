@@ -2,6 +2,8 @@ import React from "react";
 import "./Styles.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import exportFromJSON from "export-from-json";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 import BaseURL from "../../Api/BaseURL";
 
@@ -11,6 +13,7 @@ const Index = () => {
 
   const [investment, setInvestment] = React.useState([]);
   const [totalinvestment, setTotalInvestment] = React.useState(0);
+  const [remaininginvestment, setRemainingInvestment] = React.useState(0);
 
   React.useEffect(() => {
     const user = localStorage.getItem("user");
@@ -19,6 +22,7 @@ const Index = () => {
       return;
     }
 
+    setRemainingInvestment(Math.floor(10000 + Math.random() * 90000));
     fetch(BaseURL + "admin/investment/" + id, {
       method: "GET",
       headers: {
@@ -37,7 +41,47 @@ const Index = () => {
   }, []);
 
   const paynow = () => {
-    navigate(`/investment/${id}/payment`);
+    navigate(`/investment/${id}/payment`, {
+      state: { remaininginvestment },
+    });
+  };
+
+  const exportToPDF = () => {
+    const header = [
+      "S. No.",
+      "Date",
+      "Time",
+      "Transaction ID",
+      "Amount",
+      "Method",
+      "Status",
+    ];
+
+    const data = [];
+
+    investment?.investment.map((dta, idx) => {
+      data.push([
+        (idx + 1).toString(),
+        dta?.date.split("T")[0].split("-").reverse().join("-"),
+        dta?.date.split("T")[1].split(".")[0],
+        Math.floor(100000000 + Math.random() * 900000000),
+        "$ " + dta?.amount,
+        dta?.savingProfit,
+        "Paid",
+      ]);
+    });
+
+    const doc = new jsPDF();
+    doc.text("Investment History" + " - " + investment?.name, 14, 10);
+
+    doc.autoTable({
+      head: [header],
+      body: data,
+      margin: { top: 20 },
+      styles: { fontSize: 10, valign: "middle", halign: "center" },
+    });
+
+    doc.save("investment" + " - " + investment?.name + ".pdf");
   };
 
   const exportToCSV = () => {
@@ -80,7 +124,7 @@ const Index = () => {
           </Link>
         </div>
         <div className="">
-          <div className="btn btn-sm btn-dark me-3" onClick={exportToCSV}>
+          <div className="btn btn-sm btn-dark me-3" onClick={exportToPDF}>
             Export
           </div>
 
@@ -113,7 +157,7 @@ const Index = () => {
                   <td>0.</td>
                   <td>{new Date().toLocaleDateString()}</td>
                   <td> -- </td>
-                  <td>$ {Math.floor(10000 + Math.random() * 90000)}</td>
+                  <td>$ {remaininginvestment}</td>
                   <td>--</td>
                   <td className="">
                     <button onClick={paynow} className="btn btn-primary">

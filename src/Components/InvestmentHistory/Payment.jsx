@@ -1,13 +1,49 @@
 import React from "react";
 
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+
+import BaseURL from "../../Api/BaseURL";
 
 const Payment = () => {
+  const { state } = useLocation();
   const navigate = useNavigate();
   const { id } = useParams();
   const [paymentmethod, setPaymentmethod] = React.useState("cash");
 
-  const setpayment = () => {
+  React.useEffect(() => {
+    console.log(state);
+    const user = localStorage.getItem("user");
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+  }, []);
+
+  // const setpayment = () => {};
+
+  const submitpayment = () => {
+    const data = {
+      transactionId: "1234567890",
+      amount: state.remaininginvestment,
+      remarks: "This is a test payment",
+    };
+
+    fetch(BaseURL + "admin/depositinvestment/" + id, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+        if (!res.error) navigate(`/investment/history/${id}`);
+        else alert(res.error);
+      })
+      .catch((err) => console.log(err));
+
     console.log(paymentmethod);
     console.log(id);
     navigate(`/investment/history/${id}`);
@@ -54,7 +90,10 @@ const Payment = () => {
           </div>
         </div>
         <div className="d-flex my-4">
-          <button onClick={setpayment} className="ms-auto btn btn-sm btn-dark">
+          <button
+            onClick={submitpayment}
+            className="ms-auto btn btn-sm btn-dark"
+          >
             Continue
           </button>
         </div>
