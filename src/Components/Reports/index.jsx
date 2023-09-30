@@ -2,6 +2,8 @@ import React from "react";
 import "./Styles.css";
 import { useNavigate } from "react-router-dom";
 import exportFromJSON from "export-from-json";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 import BaseURL from "../../Api/BaseURL";
 
@@ -16,6 +18,7 @@ const Index = () => {
   }, []);
 
   const TransactionData = () => {
+    console.log("TransactionData");
     fetch(`${BaseURL}admin/gettransaction`, {
       method: "GET",
       headers: {
@@ -35,9 +38,46 @@ const Index = () => {
             };
           });
 
-          const fileName = "TransactionReport";
-          const exportType = exportFromJSON.types.csv;
-          exportFromJSON({ data, fileName, exportType });
+          // const fileName = "TransactionReport";
+          // const exportType = exportFromJSON.types.csv;
+          // exportFromJSON({ data, fileName, exportType });
+
+          const header = [
+            "Transaction Date",
+            "Transaction Time",
+            "User ID",
+            "User Name",
+            "Transaction ID",
+            "Amount",
+            "Remark",
+          ];
+
+          const data1 = [];
+
+          dta.transactions.map((ele, index) => {
+            data1.push([
+              ele.date.split("T")[0].split("-").reverse().join("-"),
+              ele.date.split("T")[1].split(".")[0],
+              ele.userId._id,
+              ele.userId.name,
+              ele.transactionId,
+              ele.amount,
+              ele.remark,
+            ]);
+          });
+
+          const doc = new jsPDF({ orientation: "landscape" });
+
+          doc.text("Transaction Report", 14, 10);
+          doc.autoTable({
+            head: [header],
+            body: data1,
+            startY: 20,
+            //center
+            styles: { fontSize: 10, valign: "middle", halign: "center" },
+          });
+
+          doc.save("TransactionReport.pdf");
         } else alert("Error");
       })
       .catch((err) => console.log(err));
@@ -52,30 +92,63 @@ const Index = () => {
     })
       .then((res) => res.json())
       .then((dta) => {
-        console.log(dta);
-        const data = dta.users.map((ele) => {
-          return {
-            id: ele._id,
-            name: ele.name,
-            email: ele.email,
-            phone: ele.mobile,
-            joiningDate: ele.joiningDate,
-            gender: ele.gender,
-            dob: ele.dob,
-            verified: ele.isVerified,
-            balance: ele.balance,
-            savingprofit: ele.savingprofit,
-            totalDeposit: ele.totalDeposit,
-            totalWithdraw: ele.totalWithdraw,
-            totalProfit: ele.totalProfit,
-          };
+        // console.log(dta);
+        // const data = dta.users.map((ele) => {
+        //   return {
+        //     id: ele._id,
+        //     name: ele.name,
+        //     email: ele.email,
+        //     phone: ele.mobile,
+        //     joiningDate: ele.joiningDate,
+        //     gender: ele.gender,
+        //     dob: ele.dob,
+        //     verified: ele.isVerified,
+        //     balance: ele.balance,
+        //     savingprofit: ele.savingprofit,
+        //     totalDeposit: ele.totalDeposit,
+        //     totalWithdraw: ele.totalWithdraw,
+        //     totalProfit: ele.totalProfit,
+        //   };
+        // });
+
+        const header = [
+          "User ID",
+          "User Name",
+          "Email",
+          "Joining Date",
+          "Date Of Birth",
+        ];
+
+        const data = [];
+
+        dta.users.map((ele, index) => {
+          data.push([
+            ele._id,
+            ele.name,
+            ele.email,
+            ele.joiningDate.split("T")[0].split("-").reverse().join("-"),
+            ele.dob.split("T")[0].split("-").reverse().join("-"),
+          ]);
         });
 
-        if (!dta.error) {
-          const fileName = "UserReport";
-          const exportType = exportFromJSON.types.csv;
-          exportFromJSON({ data, fileName, exportType });
-        } else alert("Error");
+        const doc = new jsPDF({ orientation: "landscape" });
+
+        doc.text("User Report", 14, 10);
+        doc.autoTable({
+          head: [header],
+          body: data,
+          startY: 20,
+          //center
+          styles: { fontSize: 10, valign: "middle", halign: "center" },
+        });
+
+        doc.save("UserReport.pdf");
+
+        // if (!dta.error) {
+        //   const fileName = "UserReport";
+        //   const exportType = exportFromJSON.types.csv;
+        //   exportFromJSON({ data, fileName, exportType });
+        // } else alert("Error");
       })
       .catch((err) => console.log(err));
   };

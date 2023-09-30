@@ -46,7 +46,9 @@ const Index = () => {
     });
   };
 
-  const exportToPDF = () => {
+  const doc = new jsPDF();
+
+  const filldata = () => {
     const header = [
       "S. No.",
       "Date",
@@ -58,21 +60,21 @@ const Index = () => {
     ];
 
     const data = [];
+    const total = investment?.investment?.length;
 
-    investment?.investment.map((dta, idx) => {
+    investment?.investment?.map((dta, idx) => {
       data.push([
-        (idx + 1).toString(),
+        idx + 1,
         dta?.date.split("T")[0].split("-").reverse().join("-"),
         dta?.date.split("T")[1].split(".")[0],
         Math.floor(100000000 + Math.random() * 900000000),
-        "$ " + dta?.amount,
+        dta?.amount,
         dta?.savingProfit,
         "Paid",
       ]);
     });
 
-    const doc = new jsPDF();
-    doc.text("Investment History" + " - " + investment?.name, 14, 10);
+    doc.text("Investment History", 14, 15);
 
     doc.autoTable({
       head: [header],
@@ -80,17 +82,38 @@ const Index = () => {
       margin: { top: 20 },
       styles: { fontSize: 10, valign: "middle", halign: "center" },
     });
-
-    doc.save("investment" + " - " + investment?.name + ".pdf");
   };
 
-  const exportToCSV = () => {
-    const data = investment?.investment;
-    const fileName = "investment";
-    const exportType = "csv";
+  const exportToPDF = () => {
+    doc.deletePage(1);
+    doc.addPage();
+    if (doc.autoTable.previous) {
+      doc.autoTable.previous.finalY = 30;
+    }
 
-    exportFromJSON({ data, fileName, exportType });
+    filldata();
+    doc.save("loan.pdf");
   };
+
+  const printpdf = () => {
+    doc.deletePage(1);
+    doc.addPage();
+    if (doc.autoTable.previous) {
+      doc.autoTable.previous.finalY = 30;
+    }
+
+    filldata();
+    doc.autoPrint();
+    window.open(doc.output("bloburl"), "_blank");
+  };
+
+  // const exportToCSV = () => {
+  //   const data = investment?.investment;
+  //   const fileName = "investment";
+  //   const exportType = "csv";
+
+  //   exportFromJSON({ data, fileName, exportType });
+  // };
 
   const renderloanhistable = () =>
     investment?.investment ? (
@@ -124,6 +147,9 @@ const Index = () => {
           </Link>
         </div>
         <div className="">
+          <div className="btn btn-sm btn-dark me-3" onClick={printpdf}>
+            Print
+          </div>
           <div className="btn btn-sm btn-dark me-3" onClick={exportToPDF}>
             Export
           </div>

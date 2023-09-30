@@ -3,6 +3,8 @@ import "./Styles.css";
 
 import { useParams, Link, useNavigate } from "react-router-dom";
 import exportFromJSON from "export-from-json";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 import BaseURL from "../../Api/BaseURL";
 
@@ -43,18 +45,54 @@ const Index = () => {
   }, [id]);
 
   const exportTransaction = () => {
-    const data = transactions.map((ele) => {
-      return {
-        transactionDate: ele.date,
-        transactionId: ele.transactionId,
-        Amount: ele.amount,
-        Remark: ele.remark,
-      };
+    // const data = transactions.map((ele) => {
+    //   return {
+    //     transactionDate: ele.date,
+    //     transactionId: ele.transactionId,
+    //     Amount: ele.amount,
+    //     Remark: ele.remark,
+    //   };
+    // });
+
+    // const fileName = "TransactionReport";
+    // const exportType = exportFromJSON.types.csv;
+    // exportFromJSON({ data, fileName, exportType });
+    // legder
+    const header = [
+      "Date",
+      "Time",
+      "Transaction ID",
+      "Type",
+      "Deposit",
+      "Withdraw",
+    ];
+
+    const data1 = [];
+
+    transactions.map((ele, index) => {
+      data1.push([
+        ele.date.split("T")[0].split("-").reverse().join("-"),
+        ele.date.split("T")[1].split(".")[0],
+        ele.transactionId,
+        ele.transactionType,
+        ele.transactionType !== "LoanGiven" ? ele.amount : "",
+        ele.transactionType === "LoanGiven" ? ele.amount : "",
+      ]);
     });
 
-    const fileName = "TransactionReport";
-    const exportType = exportFromJSON.types.csv;
-    exportFromJSON({ data, fileName, exportType });
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("Transaction Report Of " + user.name , 14, 10);
+    doc.autoTable({
+      head: [header],
+      body: data1,
+      startY: 20,
+      //center
+      styles: { fontSize: 10, valign: "middle", halign: "center" },
+    });
+
+    doc.save("TransactionReport.pdf");
   };
 
   const rendercommntable = () =>

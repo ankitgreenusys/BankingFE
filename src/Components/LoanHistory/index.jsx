@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import exportFromJSON from "export-from-json";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+// import { Viewer } from "@react-pdf-viewer/core";
 
 import BaseURL from "../../Api/BaseURL";
 
@@ -39,7 +40,9 @@ const Index = () => {
       .catch((err) => console.log(err));
   }, []);
 
-  const exportToPDF = () => {
+  const doc = new jsPDF();
+
+  const filldata = () => {
     const header = [
       "S. No.",
       "Date",
@@ -52,8 +55,6 @@ const Index = () => {
 
     const data = [];
     const total = arrLoan?.repaymenttransactionId?.length;
-    const totalpaid = arrLoan?.totalpaid;
-    const totalremain = arrLoan?.remaining;
 
     // data.push(header);
     data.push([
@@ -82,18 +83,42 @@ const Index = () => {
       ]);
     });
 
-    const doc = new jsPDF();
     doc.text("Loan History", 14, 15);
 
-    doc.text("Total Paid: " + totalpaid, 14, 15 + total * 10);
-    doc.text("Total Remaining: " + totalremain, 14, 15 + total * 10 + 5);
+    doc.text("Total Paid: " + totpaid, 14, 15 + total * 10);
+    doc.text("Total Remaining: " + totremain, 14, 15 + total * 10 + 5);
     doc.autoTable({
       head: [header],
       body: data,
       margin: { top: 40 },
       styles: { fontSize: 10, valign: "middle", halign: "center" },
     });
+  };
+
+  const exportToPDF = () => {
+    //clear pdf
+    doc.deletePage(1);
+    doc.addPage();
+    if (doc.autoTable.previous) {
+      doc.autoTable.previous.finalY = 30;
+    }
+
+    filldata();
     doc.save("loan.pdf");
+  };
+
+  const printDocument = async () => {
+    doc.deletePage(1);
+    doc.addPage();
+    if (doc.autoTable.previous) {
+      doc.autoTable.previous.finalY = 30;
+    }
+    //reset autoTable
+
+    filldata();
+
+    doc.autoPrint();
+    window.open(doc.output("bloburl"), "_blank");
   };
 
   const exportToCSV = () => {
@@ -166,6 +191,9 @@ const Index = () => {
           </Link>
         </div>
         <div className="">
+          <div className="btn btn-sm btn-dark me-3" onClick={printDocument}>
+            Print
+          </div>
           <div className="btn btn-sm btn-dark me-3" onClick={exportToPDF}>
             Export
           </div>
